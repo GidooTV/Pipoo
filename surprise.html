@@ -1,0 +1,125 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surprise for You</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #282c34;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+        }
+        #clickButton {
+            padding: 20px 40px;
+            font-size: 20px;
+            background-color: #ff69b4;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        #heartCanvas, #message {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div id="page1">
+    <button id="clickButton">Xé túi mù</button>
+</div>
+<div id="page2">
+    <canvas id="heartCanvas" width="800" height="600"></canvas>
+</div>
+<div id="page3">
+    <h1 id="message">Pí poo, chúc mừng em năm mới đã gặp được người cần gặp</h1>
+</div>
+
+<script>
+    document.getElementById('clickButton').addEventListener('click', function() {
+        document.getElementById('page1').style.display = 'none';
+        showHeartCanvas();
+    });
+
+    function showHeartCanvas() {
+        const canvas = document.getElementById('heartCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.style.display = 'block';
+
+        let particles = [];
+        const colors = ['#ff69b4', '#ff1493', '#ffb6c1', '#ff6347'];
+
+        function createHeartParticles(x, y) {
+            for (let i = 0; i < 100; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    xSpeed: (Math.random() - 0.5) * 10,
+                    ySpeed: (Math.random() - 0.5) * 10,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    size: Math.random() * 5 + 2
+                });
+            }
+        }
+
+        function drawHeart(x, y, size, color) {
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.bezierCurveTo(x + size / 2, y - size / 2, x + size, y + size / 2, x, y + size);
+            ctx.bezierCurveTo(x - size, y + size / 2, x - size / 2, y - size / 2, x, y);
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach((particle, index) => {
+                ctx.fillStyle = particle.color;
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                ctx.fill();
+
+                particle.x += particle.xSpeed;
+                particle.y += particle.ySpeed;
+                particle.size *= 0.95;
+
+                if (particle.size < 0.5) {
+                    particles.splice(index, 1);
+                }
+            });
+
+            if (particles.length > 0) {
+                requestAnimationFrame(animateParticles);
+            } else {
+                showMessage();
+            }
+        }
+
+        createHeartParticles(canvas.width / 2, canvas.height / 2);
+        animateParticles();
+    }
+
+    function showMessage() {
+        document.getElementById('heartCanvas').style.display = 'none';
+        document.getElementById('page3').style.display = 'block';
+        addFireworks();
+    }
+
+    function addFireworks() {
+        const message = document.getElementById('message');
+        let interval = setInterval(() => {
+            message.style.visibility = (message.style.visibility === 'visible') ? 'hidden' : 'visible';
+        }, 500);
+        setTimeout(() => clearInterval(interval), 5000);
+    }
+</script>
+
+</body>
+</html>
